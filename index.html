@@ -65,9 +65,8 @@
     }
 
     .action-button {
-      min-width: 150px;
+      width: 180px;
       height: 50px;
-      padding: 0 18px;
       border-radius: 10px;
       color: #ffffff;
       text-decoration: none;
@@ -79,20 +78,20 @@
       white-space: nowrap;
     }
 
-    .pdf-button {
-      background: #222631;
-    }
-
-    .pdf-button:hover {
-      background: #303544;
-    }
-
     .cafe-button {
       background: #03c75a;
     }
 
     .cafe-button:hover {
       background: #02b351;
+    }
+
+    .pdf-button {
+      background: #222631;
+    }
+
+    .pdf-button:hover {
+      background: #303544;
     }
 
     main {
@@ -140,19 +139,22 @@
       text-align: center;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 760px) {
       header {
         padding: 12px 14px;
         gap: 10px;
+        align-items: flex-start;
+        flex-direction: column;
       }
 
       .title-area {
+        width: 100%;
         gap: 8px;
       }
 
       .title {
-        font-size: 14px;
-        max-width: 190px;
+        font-size: 15px;
+        max-width: 100%;
       }
 
       .sub {
@@ -160,13 +162,13 @@
       }
 
       .button-area {
+        width: 100%;
         gap: 8px;
       }
 
       .action-button {
-        min-width: 96px;
+        width: 50%;
         height: 42px;
-        padding: 0 10px;
         font-size: 13px;
         border-radius: 9px;
       }
@@ -194,7 +196,7 @@
 ```
 <div class="button-area">
   <a class="action-button cafe-button" href="https://naver.me/Ge7Bzi2D" target="_blank" rel="noopener noreferrer">
-    카페 가입하기
+    네이버 카페 초대링크
   </a>
 
   <a class="action-button pdf-button" href="/yangji_reborn/yangji_guide.pdf" download>
@@ -214,7 +216,7 @@
 <div id="pdf-pages"></div>
 
 <p class="notice">
-  PDF가 보이지 않으면 오른쪽 위의 “PDF 다운로드” 버튼을 눌러 확인하세요.
+  PDF가 보이지 않으면 상단의 “PDF 다운로드” 버튼을 눌러 확인하세요.
 </p>
 ```
 
@@ -268,7 +270,7 @@
 
         loading.style.display = "none";
       } catch (error) {
-        loading.textContent = "PDF를 불러오지 못했습니다. 오른쪽 위의 PDF 다운로드 버튼을 눌러 확인하세요.";
+        loading.textContent = "PDF를 불러오지 못했습니다. 상단의 PDF 다운로드 버튼을 눌러 확인하세요.";
         console.error(error);
       }
     }
