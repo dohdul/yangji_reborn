@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -34,6 +35,9 @@
     .title {
       font-size: 18px;
       font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .sub {
@@ -41,11 +45,12 @@
       color: #9aa3b2;
       font-weight: 500;
       font-size: 15px;
+      white-space: nowrap;
     }
 
     .download {
       background: #222631;
-      color: #fff;
+      color: #ffffff;
       text-decoration: none;
       padding: 13px 20px;
       border-radius: 10px;
@@ -77,6 +82,7 @@
       height: 100%;
       border: 0;
       display: block;
+      background: #ffffff;
     }
 
     .notice {
@@ -84,6 +90,7 @@
       margin: 16px auto 0;
       color: #aeb6c5;
       font-size: 14px;
+      line-height: 1.6;
       text-align: center;
     }
 
@@ -96,6 +103,7 @@
 
       .title {
         font-size: 14px;
+        max-width: 210px;
       }
 
       .sub {
@@ -116,6 +124,7 @@
       }
     }
   </style>
+
 </head>
 
 <body>
@@ -125,19 +134,25 @@
       <span class="sub">가이드</span>
     </div>
 
-    <a class="download" href="yangji_guide.pdf" download>
-      PDF 다운로드
-    </a>
+```
+<a class="download" href="/yangji_reborn/yangji_guide.pdf" download>
+  PDF 다운로드
+</a>
+```
+
   </header>
 
   <main>
     <div class="pdf-wrap">
-      <iframe src="yangji_guide.pdf"></iframe>
+      <iframe src="/yangji_reborn/yangji_guide.pdf"></iframe>
     </div>
 
-    <p class="notice">
-      PDF가 보이지 않으면 오른쪽 위의 PDF 다운로드 버튼을 눌러 확인하세요.
-    </p>
+```
+<p class="notice">
+  PDF가 보이지 않으면 오른쪽 위의 PDF 다운로드 버튼을 눌러 확인하세요.
+</p>
+```
+
   </main>
 </body>
 </html>
