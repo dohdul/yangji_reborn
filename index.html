@@ -32,6 +32,13 @@
       z-index: 10;
     }
 
+    .title-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
     .title {
       font-size: 18px;
       font-weight: 800;
@@ -41,7 +48,6 @@
     }
 
     .sub {
-      margin-left: 12px;
       color: #9aa3b2;
       font-weight: 500;
       font-size: 15px;
@@ -52,10 +58,10 @@
       background: #222631;
       color: #ffffff;
       text-decoration: none;
-      padding: 13px 20px;
+      padding: 13px 22px;
       border-radius: 10px;
-      font-weight: 700;
-      font-size: 15px;
+      font-weight: 800;
+      font-size: 16px;
       white-space: nowrap;
     }
 
@@ -64,30 +70,35 @@
     }
 
     main {
-      padding: 36px 16px 80px;
+      padding: 42px 16px 90px;
     }
 
-    .pdf-wrap {
+    #pdf-pages {
+      width: 100%;
       max-width: 940px;
-      height: calc(100vh - 120px);
       margin: 0 auto;
+    }
+
+    .page {
+      width: 100%;
+      margin: 0 auto 28px;
       background: #ffffff;
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 12px 35px rgba(0,0,0,0.35);
     }
 
-    iframe {
+    canvas {
       width: 100%;
-      height: 100%;
-      border: 0;
+      height: auto;
       display: block;
       background: #ffffff;
     }
 
+    .loading,
     .notice {
       max-width: 940px;
-      margin: 16px auto 0;
+      margin: 20px auto;
       color: #aeb6c5;
       font-size: 14px;
       line-height: 1.6;
@@ -116,11 +127,12 @@
       }
 
       main {
-        padding: 18px 8px 50px;
+        padding: 20px 8px 60px;
       }
 
-      .pdf-wrap {
-        height: calc(100vh - 90px);
+      .page {
+        margin-bottom: 18px;
+        border-radius: 6px;
       }
     }
   </style>
@@ -129,7 +141,7 @@
 
 <body>
   <header>
-    <div>
+    <div class="title-area">
       <span class="title">양지마을_전자서명_동의서_가이드안내</span>
       <span class="sub">가이드</span>
     </div>
@@ -143,16 +155,72 @@
   </header>
 
   <main>
-    <div class="pdf-wrap">
-      <iframe src="/yangji_reborn/yangji_guide.pdf"></iframe>
+    <div id="loading" class="loading">
+      PDF를 불러오는 중입니다.
     </div>
 
 ```
+<div id="pdf-pages"></div>
+
 <p class="notice">
-  PDF가 보이지 않으면 오른쪽 위의 PDF 다운로드 버튼을 눌러 확인하세요.
+  PDF가 보이지 않으면 오른쪽 위의 “PDF 다운로드” 버튼을 눌러 확인하세요.
 </p>
 ```
 
   </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <script>
+    const pdfUrl = "/yangji_reborn/yangji_guide.pdf";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    const container = document.getElementById("pdf-pages");
+    const loading = document.getElementById("loading");
+
+    async function renderPdf() {
+      try {
+        const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+
+        loading.textContent = "총 " + pdf.numPages + "페이지를 불러오는 중입니다.";
+
+        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+          const page = await pdf.getPage(pageNumber);
+
+          const viewportBase = page.getViewport({ scale: 1 });
+          const containerWidth = Math.min(container.clientWidth, 940);
+          const scale = containerWidth / viewportBase.width;
+          const viewport = page.getViewport({ scale: scale * 2 });
+
+          const pageBox = document.createElement("div");
+          pageBox.className = "page";
+
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+
+          pageBox.appendChild(canvas);
+          container.appendChild(pageBox);
+
+          await page.render({
+            canvasContext: context,
+            viewport: viewport
+          }).promise;
+        }
+
+        loading.style.display = "none";
+      } catch (error) {
+        loading.textContent = "PDF를 불러오지 못했습니다. 오른쪽 위의 PDF 다운로드 버튼을 눌러 확인하세요.";
+        console.error(error);
+      }
+    }
+
+    renderPdf();
+  </script>
+
 </body>
 </html>
