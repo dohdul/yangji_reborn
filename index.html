@@ -12,21 +12,23 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       background: #0f1117;
       color: #ffffff;
       font-family: Arial, "Noto Sans KR", sans-serif;
     }
 
     header {
-      height: 66px;
+      min-height: 66px;
       background: #111318;
       border-bottom: 1px solid #2a2d35;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 28px;
+      gap: 16px;
+      padding: 12px 28px;
       position: sticky;
       top: 0;
       z-index: 10;
@@ -42,6 +44,7 @@
     .title {
       font-size: 18px;
       font-weight: 800;
+      color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -54,23 +57,56 @@
       white-space: nowrap;
     }
 
-    .download {
-      background: #222631;
+    .button-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .action-button {
+      min-width: 150px;
+      height: 50px;
+      padding: 0 18px;
+      border-radius: 10px;
       color: #ffffff;
       text-decoration: none;
-      padding: 13px 22px;
-      border-radius: 10px;
       font-weight: 800;
       font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       white-space: nowrap;
     }
 
-    .download:hover {
+    .pdf-button {
+      background: #222631;
+    }
+
+    .pdf-button:hover {
       background: #303544;
     }
 
+    .cafe-button {
+      background: #03c75a;
+    }
+
+    .cafe-button:hover {
+      background: #02b351;
+    }
+
     main {
+      width: 100%;
       padding: 42px 16px 90px;
+    }
+
+    #loading {
+      max-width: 940px;
+      margin: 20px auto;
+      color: #aeb6c5;
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
     }
 
     #pdf-pages {
@@ -95,10 +131,9 @@
       background: #ffffff;
     }
 
-    .loading,
     .notice {
       max-width: 940px;
-      margin: 20px auto;
+      margin: 16px auto 0;
       color: #aeb6c5;
       font-size: 14px;
       line-height: 1.6;
@@ -107,23 +142,33 @@
 
     @media (max-width: 700px) {
       header {
-        height: auto;
         padding: 12px 14px;
         gap: 10px;
       }
 
+      .title-area {
+        gap: 8px;
+      }
+
       .title {
         font-size: 14px;
-        max-width: 210px;
+        max-width: 190px;
       }
 
       .sub {
         display: none;
       }
 
-      .download {
+      .button-area {
+        gap: 8px;
+      }
+
+      .action-button {
+        min-width: 96px;
+        height: 42px;
+        padding: 0 10px;
         font-size: 13px;
-        padding: 10px 12px;
+        border-radius: 9px;
       }
 
       main {
@@ -147,15 +192,21 @@
     </div>
 
 ```
-<a class="download" href="/yangji_reborn/yangji_guide.pdf" download>
-  PDF 다운로드
-</a>
+<div class="button-area">
+  <a class="action-button cafe-button" href="https://naver.me/Ge7Bzi2D" target="_blank" rel="noopener noreferrer">
+    카페 가입하기
+  </a>
+
+  <a class="action-button pdf-button" href="/yangji_reborn/yangji_guide.pdf" download>
+    PDF 다운로드
+  </a>
+</div>
 ```
 
   </header>
 
   <main>
-    <div id="loading" class="loading">
+    <div id="loading">
       PDF를 불러오는 중입니다.
     </div>
 
@@ -172,36 +223,39 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <script>
-    const pdfUrl = "/yangji_reborn/yangji_guide.pdf";
+    var PDF_URL = "/yangji_reborn/yangji_guide.pdf";
 
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-    const container = document.getElementById("pdf-pages");
-    const loading = document.getElementById("loading");
+    var container = document.getElementById("pdf-pages");
+    var loading = document.getElementById("loading");
 
     async function renderPdf() {
       try {
-        const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+        var pdf = await pdfjsLib.getDocument(PDF_URL).promise;
 
         loading.textContent = "총 " + pdf.numPages + "페이지를 불러오는 중입니다.";
 
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-          const page = await pdf.getPage(pageNumber);
+        for (var pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+          var page = await pdf.getPage(pageNumber);
 
-          const viewportBase = page.getViewport({ scale: 1 });
-          const containerWidth = Math.min(container.clientWidth, 940);
-          const scale = containerWidth / viewportBase.width;
-          const viewport = page.getViewport({ scale: scale * 2 });
+          var baseViewport = page.getViewport({ scale: 1 });
+          var containerWidth = Math.min(container.clientWidth, 940);
+          var scale = containerWidth / baseViewport.width;
+          var outputScale = window.devicePixelRatio || 1;
+          var viewport = page.getViewport({ scale: scale * outputScale });
 
-          const pageBox = document.createElement("div");
+          var pageBox = document.createElement("div");
           pageBox.className = "page";
 
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
+          var canvas = document.createElement("canvas");
+          var context = canvas.getContext("2d");
 
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
+          canvas.width = Math.floor(viewport.width);
+          canvas.height = Math.floor(viewport.height);
+          canvas.style.width = "100%";
+          canvas.style.height = "auto";
 
           pageBox.appendChild(canvas);
           container.appendChild(pageBox);
